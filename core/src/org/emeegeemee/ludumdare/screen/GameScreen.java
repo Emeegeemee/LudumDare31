@@ -126,8 +126,6 @@ public class GameScreen extends ScreenAdapter implements InputProcessor {
         f = bodies[3].createFixture(cs, 0);
         f.setRestitution(1.0f);
 
-        //body2.setLinearVelocity(-20, -20);
-
         Gdx.input.setInputProcessor(this);
 
 
@@ -150,8 +148,19 @@ public class GameScreen extends ScreenAdapter implements InputProcessor {
         }
 
         for(Body body2 : bodies) {
-            Vector2 dist = body.getPosition().cpy().sub(body2.getPosition());
-            body2.setLinearVelocity(body2.getLinearVelocity().lerp(dist.nor(), 0.7f).scl(30));
+            Vector2 pos = body2.getPosition();
+            Vector2 posCpy = pos.cpy();
+
+            Vector2 dist = body.getPosition().cpy().sub(pos);
+            body2.setLinearVelocity(body2.getLinearVelocity().lerp(dist.nor(), 0.8f).scl(20));
+
+            posCpy.x = MathUtils.clamp(pos.x, -200, 200);
+            posCpy.y = MathUtils.clamp(pos.y, -200, 200);
+
+            if(!pos.equals(posCpy)) {
+                float rot = -20 + MathUtils.random(40f);
+                body2.setLinearVelocity(dist.nor().scl(20f).rotate(rot));
+            }
         }
 
 
