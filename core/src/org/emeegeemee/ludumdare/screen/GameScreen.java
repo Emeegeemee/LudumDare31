@@ -78,7 +78,8 @@ public class GameScreen extends ScreenAdapter implements InputProcessor {
         PolygonShape ps = new PolygonShape();
         ps.setAsBox(1, 20, new Vector2(13, 0), 0);
 
-        body.createFixture(ps, 0);
+        Fixture f = body.createFixture(ps, 0);
+        f.setRestitution(1.0f);
 
         bodies = new Body[4];
 
@@ -90,7 +91,7 @@ public class GameScreen extends ScreenAdapter implements InputProcessor {
         cs = new CircleShape();
         cs.setRadius(5);
 
-        Fixture f = bodies[0].createFixture(cs, 0);
+        f = bodies[0].createFixture(cs, 0);
         f.setRestitution(1.0f);
 
         bodyDef = new BodyDef();
@@ -124,7 +125,7 @@ public class GameScreen extends ScreenAdapter implements InputProcessor {
         cs.setRadius(5);
 
         f = bodies[3].createFixture(cs, 0);
-        f.setRestitution(1.0f);
+        f.setRestitution(1.5f);
 
         Gdx.input.setInputProcessor(this);
 
@@ -152,14 +153,10 @@ public class GameScreen extends ScreenAdapter implements InputProcessor {
             Vector2 posCpy = pos.cpy();
 
             Vector2 dist = body.getPosition().cpy().sub(pos);
-            body2.setLinearVelocity(body2.getLinearVelocity().lerp(dist.nor(), 0.8f).scl(20));
-
-            posCpy.x = MathUtils.clamp(pos.x, -200, 200);
-            posCpy.y = MathUtils.clamp(pos.y, -200, 200);
+            body2.applyForceToCenter(dist.nor().scl(10f), true);
 
             if(!pos.equals(posCpy)) {
-                float rot = -20 + MathUtils.random(40f);
-                body2.setLinearVelocity(dist.nor().scl(20f).rotate(rot));
+                body2.setLinearVelocity(Vector2.Zero);
             }
         }
 
