@@ -11,6 +11,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import org.emeegeemee.ludumdare.LudumDare;
+import org.emeegeemee.ludumdare.entity.Player;
 
 /**
  * Username: Justin
@@ -28,7 +29,8 @@ public class GameScreen extends ScreenAdapter implements InputProcessor {
     World world;
     Box2DDebugRenderer debugRenderer;
 
-    Body body;
+   // Body body;
+    Player player;
     Body[] bodies;
 
     public GameScreen(LudumDare gam) {
@@ -63,35 +65,36 @@ public class GameScreen extends ScreenAdapter implements InputProcessor {
 
         camera = new OrthographicCamera();
 
-        BodyDef bodyDef = new BodyDef();
-        bodyDef.type = BodyDef.BodyType.DynamicBody;
-        bodyDef.position.set(new Vector2(0, 0));
+//        BodyDef bodyDef = new BodyDef();
+//        bodyDef.type = BodyDef.BodyType.DynamicBody;
+//        bodyDef.position.set(new Vector2(0, 0));
+//
+//        body = world.createBody(bodyDef);
+//        CircleShape cs = new CircleShape();
+//        cs.setRadius(10);
+//
+//        body.createFixture(cs, 50);
+//
+//        cs.dispose();
 
-        body = world.createBody(bodyDef);
-        CircleShape cs = new CircleShape();
-        cs.setRadius(10);
+//        PolygonShape ps = new PolygonShape();
+//        ps.setAsBox(1, 20, new Vector2(13, 0), 0);
+//
+//        Fixture f = body.createFixture(ps, 0);
+        player = new Player(10, world);
 
-        body.createFixture(cs, 50);
-
-        cs.dispose();
-
-        PolygonShape ps = new PolygonShape();
-        ps.setAsBox(1, 20, new Vector2(13, 0), 0);
-
-        Fixture f = body.createFixture(ps, 0);
-        f.setRestitution(1.0f);
 
         bodies = new Body[4];
 
-        bodyDef = new BodyDef();
+        BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
         bodyDef.position.set(100f, 100f);
         bodies[0] = world.createBody(bodyDef);
         bodies[0].setBullet(true);
-        cs = new CircleShape();
+        CircleShape cs = new CircleShape();
         cs.setRadius(5);
 
-        f = bodies[0].createFixture(cs, 0);
+        Fixture f = bodies[0].createFixture(cs, 0);
         f.setRestitution(1.0f);
 
         bodyDef = new BodyDef();
@@ -161,27 +164,22 @@ public class GameScreen extends ScreenAdapter implements InputProcessor {
     }
 
     private void logic() {
-        if(wDown) {
-            force.set(MathUtils.cos(body.getAngle()), MathUtils.sin(body.getAngle())).scl(linVel);
-        }
-        else {
-            force.set(Vector2.Zero);
-        }
+
+        System.out.println(direction);
+
+        player.applyThrust(direction.cpy().nor());
 
         for(Body body2 : bodies) {
             Vector2 pos = body2.getPosition();
             Vector2 posCpy = pos.cpy();
 
-            Vector2 dist = body.getPosition().cpy().sub(pos);
+            Vector2 dist = player.getPosition().cpy().sub(pos);
             body2.applyForceToCenter(dist.nor().scl(10f), true);
 
             if(!pos.equals(posCpy)) {
                 body2.setLinearVelocity(Vector2.Zero);
             }
         }
-
-        body.setLinearVelocity(force);
-        body.setAngularVelocity(angularVel);
     }
 
     private void draw(/*float alpha*/) {
@@ -198,7 +196,7 @@ public class GameScreen extends ScreenAdapter implements InputProcessor {
         batch.end();
     }
 
-    Vector2 force = new Vector2();
+    Vector2 direction = new Vector2();
     boolean wDown;
     float angularVel = 0.0f;
     private static final float angVel = 2.0f;
@@ -208,13 +206,16 @@ public class GameScreen extends ScreenAdapter implements InputProcessor {
     public boolean keyDown(int keycode) {
         switch(keycode) {
             case Input.Keys.A:
-                angularVel += angVel;
+                direction.add(-1, 0);
                 return true;
             case Input.Keys.D:
-                angularVel -= angVel;
+                direction.add(1,0);
                 return true;
             case Input.Keys.W:
-                wDown = true;
+                direction.add(0, 1);
+                return true;
+            case Input.Keys.S:
+                direction.add(0, -1);
                 return true;
             default:
                 return false;
@@ -225,13 +226,16 @@ public class GameScreen extends ScreenAdapter implements InputProcessor {
     public boolean keyUp(int keycode) {
         switch(keycode) {
             case Input.Keys.A:
-                angularVel -= angVel;
+                direction.add(1, 0);
                 return true;
             case Input.Keys.D:
-                angularVel += angVel;
+                direction.add(-1,0);
                 return true;
             case Input.Keys.W:
-                wDown = false;
+                direction.add(0, -1);
+                return true;
+            case Input.Keys.S:
+                direction.add(0, 1);
                 return true;
             default:
                 return false;
