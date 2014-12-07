@@ -138,14 +138,34 @@ public class GameScreen extends ScreenAdapter implements InputProcessor {
         camera.translate(-width / 2f, -height / 2f);
     }
 
+    private static final float S_PER_UPDATE = 1/45f;
+    private float lag = 0.0f;
+
+
     @Override
     public void render(float delta) {
+        lag += delta;
+
+        while(lag >= S_PER_UPDATE) {
+            physics();
+            logic();
+
+            lag -= S_PER_UPDATE;
+        }
+
+        draw(/*lag / S_PER_UPDATE*/);
+    }
+
+    private void physics() {
+        world.step(S_PER_UPDATE, 6, 2);
+    }
+
+    private void logic() {
         if(wDown) {
-            force.x = MathUtils.cos(body.getAngle()) * linVel;
-            force.y = MathUtils.sin(body.getAngle()) * linVel;
+            force.set(MathUtils.cos(body.getAngle()), MathUtils.sin(body.getAngle())).scl(linVel);
         }
         else {
-            force.set(0, 0);
+            force.set(Vector2.Zero);
         }
 
         for(Body body2 : bodies) {
@@ -160,11 +180,11 @@ public class GameScreen extends ScreenAdapter implements InputProcessor {
             }
         }
 
-
         body.setLinearVelocity(force);
         body.setAngularVelocity(angularVel);
-        world.step(1/45f, 6, 2);
+    }
 
+    private void draw(/*float alpha*/) {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
@@ -211,7 +231,6 @@ public class GameScreen extends ScreenAdapter implements InputProcessor {
                 angularVel += angVel;
                 return true;
             case Input.Keys.W:
-
                 wDown = false;
                 return true;
             default:
