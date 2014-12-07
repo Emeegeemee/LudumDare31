@@ -31,10 +31,12 @@ public class Controller extends ControllerAdapter implements Input {
                 return true;
             case 2:
                 value = -value;
-                facing.y = Math.abs(value) > EPSILON ? value : 0.0f;
+                if(Math.abs(value) > EPSILON)
+                    facing.y = value;
                 return true;
             case 3:
-                facing.x = Math.abs(value) > EPSILON ? value : 0.0f;
+                if(Math.abs(value) > EPSILON)
+                    facing.x = value;
                 return true;
             default:
                 return false;

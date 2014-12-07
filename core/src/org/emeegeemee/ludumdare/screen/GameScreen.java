@@ -134,7 +134,7 @@ public class GameScreen extends ScreenAdapter {
         f = bodies[3].createFixture(cs, 0);
         f.setRestitution(1.5f);
 
-        input = new KeyboardAndMouse();
+        input = new Controller();
 
 
     }

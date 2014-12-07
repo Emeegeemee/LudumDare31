@@ -58,7 +58,7 @@ public class KeyboardAndMouse extends InputAdapter implements Input {
 
     @Override
     public boolean mouseMoved (int screenX, int screenY) {
-        mousePos.set(screenX, screenY);
+        mousePos.set(screenX - Gdx.graphics.getWidth()/2, -screenY + Gdx.graphics.getHeight()/2);
         return true;
     }
 

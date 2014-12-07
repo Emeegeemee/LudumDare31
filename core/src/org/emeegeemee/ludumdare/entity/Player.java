@@ -13,7 +13,7 @@ public class Player {
     private float thrustForce;
     private float acceleration = 100;
     private float maxVelocity = 100;
-    private float angularVelocityRads = 1f;
+    private float angularVelocityRads = 2f;
 
     public Player(int size, World world) {
         BodyDef bodyDef = new BodyDef();
