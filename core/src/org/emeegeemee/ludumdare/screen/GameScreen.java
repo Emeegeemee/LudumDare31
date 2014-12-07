@@ -69,22 +69,6 @@ public class GameScreen extends ScreenAdapter {
 
         camera = new OrthographicCamera();
 
-//        BodyDef bodyDef = new BodyDef();
-//        bodyDef.type = BodyDef.BodyType.DynamicBody;
-//        bodyDef.position.set(new Vector2(0, 0));
-//
-//        body = world.createBody(bodyDef);
-//        CircleShape cs = new CircleShape();
-//        cs.setRadius(10);
-//
-//        body.createFixture(cs, 50);
-//
-//        cs.dispose();
-
-//        PolygonShape ps = new PolygonShape();
-//        ps.setAsBox(1, 20, new Vector2(13, 0), 0);
-//
-//        Fixture f = body.createFixture(ps, 0);
         player = new Player(10, world);
 
 
@@ -134,7 +118,12 @@ public class GameScreen extends ScreenAdapter {
         f = bodies[3].createFixture(cs, 0);
         f.setRestitution(1.5f);
 
-        input = new Controller();
+        if(Controllers.getControllers().size > 0) {
+            input = new Controller();
+        }
+        else {
+            input = new KeyboardAndMouse();
+        }
 
 
     }
