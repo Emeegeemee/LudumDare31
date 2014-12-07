@@ -1,7 +1,6 @@
 package org.emeegeemee.ludumdare.screen;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.controllers.Controllers;
 import com.badlogic.gdx.graphics.GL20;
@@ -10,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import org.emeegeemee.ludumdare.LudumDare;
+import org.emeegeemee.ludumdare.entity.Enemy;
 import org.emeegeemee.ludumdare.entity.Player;
 import org.emeegeemee.ludumdare.input.Controller;
 import org.emeegeemee.ludumdare.input.Input;
@@ -35,7 +35,7 @@ public class GameScreen extends ScreenAdapter {
 
    // Body body;
     Player player;
-    Body[] bodies;
+    Enemy[] enemies;
 
     public GameScreen(LudumDare gam) {
         game = gam;
@@ -64,6 +64,22 @@ public class GameScreen extends ScreenAdapter {
             }
         });
 
+        BodyDef bodyDef = new BodyDef();
+        bodyDef.type = BodyDef.BodyType.StaticBody;
+        bodyDef.position.set(Vector2.Zero);
+        Body body = world.createBody(bodyDef);
+        PolygonShape ps = new PolygonShape();
+        ps.setAsBox(Gdx.graphics.getWidth()/2, 1f, new Vector2(0, -Gdx.graphics.getHeight()/2-2), 0);
+        body.createFixture(ps, 0);
+
+        ps.setAsBox(Gdx.graphics.getWidth()/2, 1f, new Vector2(0, Gdx.graphics.getHeight()/2+2), 0);
+        body.createFixture(ps, 0);
+
+        ps.setAsBox(1f, Gdx.graphics.getHeight()/2, new Vector2(Gdx.graphics.getWidth()/2+2, 0), 0);
+        body.createFixture(ps, 0);
+
+        ps.setAsBox(1f, Gdx.graphics.getHeight()/2, new Vector2(-Gdx.graphics.getWidth()/2-2, 0), 0);
+        body.createFixture(ps, 0);
 
         debugRenderer = new Box2DDebugRenderer();
 
@@ -72,51 +88,12 @@ public class GameScreen extends ScreenAdapter {
         player = new Player(10, world);
 
 
-        bodies = new Body[4];
+        enemies = new Enemy[4];
 
-        BodyDef bodyDef = new BodyDef();
-        bodyDef.type = BodyDef.BodyType.DynamicBody;
-        bodyDef.position.set(100f, 100f);
-        bodies[0] = world.createBody(bodyDef);
-        bodies[0].setBullet(true);
-        CircleShape cs = new CircleShape();
-        cs.setRadius(5);
-
-        Fixture f = bodies[0].createFixture(cs, 0);
-        f.setRestitution(1.0f);
-
-        bodyDef = new BodyDef();
-        bodyDef.type = BodyDef.BodyType.DynamicBody;
-        bodyDef.position.set(100f, -100f);
-        bodies[1] = world.createBody(bodyDef);
-        bodies[1].setBullet(true);
-        cs = new CircleShape();
-        cs.setRadius(5);
-
-        f = bodies[1].createFixture(cs, 0);
-        f.setRestitution(1.0f);
-
-        bodyDef = new BodyDef();
-        bodyDef.type = BodyDef.BodyType.DynamicBody;
-        bodyDef.position.set(-100f, 100f);
-        bodies[2] = world.createBody(bodyDef);
-        bodies[2].setBullet(true);
-        cs = new CircleShape();
-        cs.setRadius(5);
-
-        f = bodies[2].createFixture(cs, 0);
-        f.setRestitution(1.0f);
-
-        bodyDef = new BodyDef();
-        bodyDef.type = BodyDef.BodyType.DynamicBody;
-        bodyDef.position.set(-100f, -100f);
-        bodies[3] = world.createBody(bodyDef);
-        bodies[3].setBullet(true);
-        cs = new CircleShape();
-        cs.setRadius(5);
-
-        f = bodies[3].createFixture(cs, 0);
-        f.setRestitution(1.5f);
+        enemies[0] = new Enemy(100f, 100f, 5f, 1f, world);
+        enemies[1] = new Enemy(100f, -100f, 5f, 1f, world);
+        enemies[2] = new Enemy(-100f, 100f, 5f, 1f, world);
+        enemies[3] = new Enemy(-100f, -100f, 5f, 1f, world);
 
         if(Controllers.getControllers().size > 0) {
             input = new Controller(player);
@@ -160,16 +137,8 @@ public class GameScreen extends ScreenAdapter {
         player.applyThrust(input.getThrust());
         player.rotate(input.getDesiredFacing());
 
-        for(Body body2 : bodies) {
-            Vector2 pos = body2.getPosition();
-            Vector2 posCpy = pos.cpy();
-
-            Vector2 dist = player.getPosition().cpy().sub(pos);
-            body2.applyForceToCenter(dist.nor().scl(10f), true);
-
-            if(!pos.equals(posCpy)) {
-                body2.setLinearVelocity(Vector2.Zero);
-            }
+        for(Enemy enemy : enemies) {
+            enemy.update(player.getPosition());
         }
     }
 
