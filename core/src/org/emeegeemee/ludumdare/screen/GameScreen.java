@@ -119,10 +119,10 @@ public class GameScreen extends ScreenAdapter {
         f.setRestitution(1.5f);
 
         if(Controllers.getControllers().size > 0) {
-            input = new Controller();
+            input = new Controller(player);
         }
         else {
-            input = new KeyboardAndMouse();
+            input = new KeyboardAndMouse(player);
         }
 
 
@@ -158,7 +158,7 @@ public class GameScreen extends ScreenAdapter {
 
     private void logic() {
         player.applyThrust(input.getThrust());
-        player.rotate(input.getDesiredFacing(player.getPosition()));
+        player.rotate(input.getDesiredFacing());
 
         for(Body body2 : bodies) {
             Vector2 pos = body2.getPosition();

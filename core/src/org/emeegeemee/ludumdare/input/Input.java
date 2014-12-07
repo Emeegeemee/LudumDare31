@@ -8,5 +8,5 @@ import com.badlogic.gdx.math.Vector2;
  */
 public interface Input {
     public Vector2 getThrust();
-    public Vector2 getDesiredFacing(Vector2 curPos);
+    public Vector2 getDesiredFacing();
 }

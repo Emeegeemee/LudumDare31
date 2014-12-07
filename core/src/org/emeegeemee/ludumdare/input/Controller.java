@@ -3,6 +3,7 @@ package org.emeegeemee.ludumdare.input;
 import com.badlogic.gdx.controllers.ControllerAdapter;
 import com.badlogic.gdx.controllers.Controllers;
 import com.badlogic.gdx.math.Vector2;
+import org.emeegeemee.ludumdare.entity.Player;
 
 /**
  * Username: Justin
@@ -13,14 +14,16 @@ public class Controller extends ControllerAdapter implements Input {
 
     private Vector2 movement = new Vector2(Vector2.Zero);
     private Vector2 facing = new Vector2(Vector2.Zero);
+    private Player player;
 
-    public Controller() {
+    public Controller(Player player) {
         Controllers.addListener(this);
+        this.player = player;
     }
 
     @Override
     public boolean axisMoved (com.badlogic.gdx.controllers.Controller controller, int axisIndex, float value) {
-        System.out.println(value);
+
         switch(axisIndex) {
             case 0:
                 value = -value;
@@ -33,10 +36,16 @@ public class Controller extends ControllerAdapter implements Input {
                 value = -value;
                 if(Math.abs(value) > EPSILON)
                     facing.y = value;
+                else {
+                    facing.set(player.getAngle());
+                }
                 return true;
             case 3:
                 if(Math.abs(value) > EPSILON)
                     facing.x = value;
+                else {
+                    facing.set(player.getAngle());
+                }
                 return true;
             default:
                 return false;
@@ -49,7 +58,7 @@ public class Controller extends ControllerAdapter implements Input {
     }
 
     @Override
-    public Vector2 getDesiredFacing(Vector2 curPos) {
+    public Vector2 getDesiredFacing() {
         return facing.cpy();
     }
 }

@@ -3,6 +3,7 @@ package org.emeegeemee.ludumdare.input;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.math.Vector2;
+import org.emeegeemee.ludumdare.entity.Player;
 
 /**
  * Username: Justin
@@ -12,8 +13,11 @@ public class KeyboardAndMouse extends InputAdapter implements Input {
     private Vector2 direction = new Vector2(Vector2.Zero);
     private Vector2 mousePos = new Vector2(Vector2.Zero);
 
-    public KeyboardAndMouse() {
+    private Player player;
+
+    public KeyboardAndMouse(Player player) {
         Gdx.input.setInputProcessor(this);
+        this.player = player;
     }
 
     @Override
@@ -68,7 +72,8 @@ public class KeyboardAndMouse extends InputAdapter implements Input {
     }
 
     @Override
-    public Vector2 getDesiredFacing(Vector2 curPos) {
+    public Vector2 getDesiredFacing() {
+        Vector2 curPos = player.getPosition();
         return new Vector2(mousePos.x - curPos.x, mousePos.y - curPos.y).nor();
     }
 }

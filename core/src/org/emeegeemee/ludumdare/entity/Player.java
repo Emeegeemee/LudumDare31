@@ -59,6 +59,10 @@ public class Player {
 
     }
 
+    public Vector2 getAngle() {
+        return new Vector2(MathUtils.cos(body.getAngle()), MathUtils.sin(body.getAngle()));
+    }
+
     public void setPosition(Vector2 newPosition) {
 
     }
