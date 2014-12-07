@@ -1,5 +1,6 @@
 package org.emeegeemee.ludumdare.entity;
 
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 
@@ -12,6 +13,7 @@ public class Player {
     private float thrustForce;
     private float acceleration = 100;
     private float maxVelocity = 100;
+    private float angularVelocityRads = 1f;
 
     public Player(int size, World world) {
         BodyDef bodyDef = new BodyDef();
@@ -36,8 +38,7 @@ public class Player {
     }
 
     public void applyThrust(Vector2 force) {
-        System.out.println(force.scl(thrustForce));
-        body.applyForceToCenter(force, true);
+        body.applyForceToCenter(force.scl(thrustForce), true);
     }
 
     public Vector2 getPosition() {
@@ -45,6 +46,16 @@ public class Player {
     }
 
     public void rotate(Vector2 desiredFacing) {
+        Vector2 playerFacing = new Vector2(MathUtils.cos(body.getAngle()), MathUtils.sin(body.getAngle()));
+        float angle = playerFacing.angleRad(desiredFacing);
+
+        if (Math.abs(angle) <= 0.05) {
+            body.setTransform(body.getPosition(), desiredFacing.angleRad());
+        }
+        else {
+            float omega = angle < 0f ? -angularVelocityRads : angularVelocityRads;
+            body.setAngularVelocity(omega);
+        }
 
     }
 

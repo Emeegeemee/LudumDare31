@@ -165,9 +165,8 @@ public class GameScreen extends ScreenAdapter implements InputProcessor {
 
     private void logic() {
 
-        System.out.println(direction);
-
         player.applyThrust(direction.cpy().nor());
+        player.rotate(new Vector2(-1,0));
 
         for(Body body2 : bodies) {
             Vector2 pos = body2.getPosition();
